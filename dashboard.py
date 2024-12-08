@@ -95,11 +95,15 @@ ocupacion = st.sidebar.multiselect(
 
 price_range = st.sidebar.slider(
     "Rango de Precio (¥)",
-    min_value=float(df['Price'].min()),
-    max_value=float(df['Price'].max()),
-    value=(float(df['Price'].min()), float(df['Price'].max())),
-    format="¥{:,.0f}"
+    min_value=float(df['Price'].min() or 0),  # Valor mínimo con un fallback a 0
+    max_value=float(df['Price'].max() or 0),  # Valor máximo con un fallback a 0
+    value=(
+        float(df['Price'].min() or 0),  # Valor inicial mínimo
+        float(df['Price'].max() or 0),  # Valor inicial máximo
+    ),
+    format="¥{:.0f}"  # Eliminamos el separador de miles por simplicidad
 )
+
 
 # Aplicar filtros
 mask = df['Price'].between(price_range[0], price_range[1])
