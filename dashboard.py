@@ -62,7 +62,7 @@ def load_data():
 
 # Cargar datos
 df = load_data()
-print(df.columns)
+
 # Sidebar con filtros
 st.sidebar.title("Filtros")
 
@@ -71,6 +71,12 @@ comarca = st.sidebar.selectbox(
     "Comarca",
     options=["Todas"] + sorted(df['Comarca'].unique().tolist())
 )
+
+barrio = st.sidebar.selectbox(
+    "Barrio",
+    options=["Todas"] + sorted(df['Barrio'].unique().tolist())
+)
+
 df['Occupancy'] = df['Occupancy'].fillna('Unknown')
 ocupacion = st.sidebar.multiselect(
     "Estado de Ocupación",
@@ -91,7 +97,8 @@ mask = df['Price'].between(price_range[0], price_range[1])
 mask &= df['Occupancy'].isin(ocupacion)
 if comarca != "Todas":
     mask &= (df['Comarca'] == comarca)
-
+if barrio != "Todas":
+    mask &= (df['Barrio'] == barrio)
 filtered_df = df[mask]
 
 # Título principal
