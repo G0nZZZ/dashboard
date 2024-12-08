@@ -54,7 +54,7 @@ def load_data():
     try:
         df = pd.read_sql('SELECT * FROM properties', engine)
         # Convertir coordenadas a lat/lon
-        df[['lat', 'lon']] = df['coordinates'].str.split(',', expand=True).astype(float)
+        df[['lat', 'lon']] = df['Coordinates'].str.split(',', expand=True).astype(float)
         return df
     except Exception as e:
         st.error(f"Error cargando datos: {str(e)}")
