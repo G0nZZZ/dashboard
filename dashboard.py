@@ -93,16 +93,31 @@ ocupacion = st.sidebar.multiselect(
     default=sorted(df['Occupancy'].unique().tolist())
 )
 
-price_range = st.sidebar.slider(
+# Convertir los valores mínimos y máximos en enteros
+min_price = int(df['Price'].min() or 0)
+max_price = int(df['Price'].max() or 0)
+
+# Crear las opciones del slider con el formato correcto
+price_options = [f"¥{i:,.0f}" for i in range(min_price, max_price + 1, 10000)]  # Incrementos de 10,000 para evitar demasiadas opciones
+
+# Formatear los valores predeterminados
+default_min_price = f"¥{min_price:,.0f}"
+default_max_price = f"¥{max_price:,.0f}"
+
+# Configurar el select_slider con opciones formateadas
+price_range = st.sidebar.select_slider(
     "Rango de Precio (¥)",
-    min_value=float(df['Price'].min() or 0),  # Valor mínimo con un fallback a 0
-    max_value=float(df['Price'].max() or 0),  # Valor máximo con un fallback a 0
-    value=(
-        float(df['Price'].min() or 0),  # Valor inicial mínimo
-        float(df['Price'].max() or 0),  # Valor inicial máximo
-    ),
-    format="¥{:.0f}"  # Eliminamos el separador de miles por simplicidad
+    options=price_options,
+    value=(default_min_price, default_max_price)  # Usar los valores formateados
 )
+
+# Parsear el rango seleccionado de vuelta a enteros (si es necesario)
+selected_min_price = int(price_range[0].replace("¥", "").replace(",", ""))
+selected_max_price = int(price_range[1].replace("¥", "").replace(",", ""))
+
+# Mostrar el rango seleccionado para depuración
+st.sidebar.write(f"Rango seleccionado: {selected_min_price} - {selected_max_price}")
+
 
 
 # Aplicar filtros
