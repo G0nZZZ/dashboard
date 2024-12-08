@@ -86,10 +86,13 @@ ocupacion = st.sidebar.multiselect(
 
 min_price = float(df['Price'].min())
 max_price = float(df['Price'].max())
+price_step = 1000000  # Adjust this step size as needed
+
+price_options = [i for i in range(int(min_price), int(max_price)+1, int(price_step))]
 
 price_range = st.sidebar.select_slider(
-    "Rango de Precio (¥)", 
-    options=list(range(int(min_price), int(max_price)+1, 1000000)),
+    "Rango de Precio (¥)",
+    options=price_options,
     value=(min_price, max_price)
 )
 
