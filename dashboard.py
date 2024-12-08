@@ -88,7 +88,7 @@ min_price = float(df['Price'].min())
 max_price = float(df['Price'].max())
 price_step = 1000000  # Adjust this step size as needed
 
-price_options = [int(i) for i in range(int(min_price), int(max_price)+1, int(price_step))]
+price_options = [int(i) for i in range(int(min_price), int(max_price+1), int(price_step))]
 
 price_range = st.sidebar.select_slider(
     "Rango de Precio (¥)",
