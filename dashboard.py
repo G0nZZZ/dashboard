@@ -92,9 +92,12 @@ price_options = [int(i) for i in range(int(min_price), int(max_price+1), int(pri
 
 price_range = st.sidebar.select_slider(
     "Rango de Precio (¥)",
-    options=price_options,
+    options=[f"¥{int(i):,.0f}" for i in price_options],
     value=(min_price, max_price)
 )
+
+# Extract the numeric values from the formatted options
+price_range = (int(price_range[0].replace(",", "")), int(price_range[1].replace(",", "")))
 
 price_range_formatted = (f"¥{price_range[0]:,.0f}", f"¥{price_range[1]:,.0f}")
 
