@@ -84,14 +84,18 @@ ocupacion = st.sidebar.multiselect(
     default=sorted(df['Occupancy'].unique().tolist())
 )
 
-price_range = st.sidebar.slider(
-    "Rango de Precio (¥)",
-    min_value=float(df['Price'].min()),
-    max_value=float(df['Price'].max()),
-    value=(float(df['Price'].min()), float(df['Price'].max())),
-    format="¥{:,.0f}"
+min_price = float(df['Price'].min())
+max_price = float(df['Price'].max())
+
+price_range = st.sidebar.select_slider(
+    "Rango de Precio (¥)", 
+    options=list(range(int(min_price), int(max_price)+1, 1000000)),
+    value=(min_price, max_price)
 )
 
+price_range_formatted = (f"¥{price_range[0]:,.0f}", f"¥{price_range[1]:,.0f}")
+
+st.sidebar.write(f"Rango de Precio: {price_range_formatted[0]} - {price_range_formatted[1]}")
 # Aplicar filtros
 mask = df['Price'].between(price_range[0], price_range[1])
 mask &= df['Occupancy'].isin(ocupacion)
