@@ -89,7 +89,7 @@ price_range = st.sidebar.slider(
     min_value=float(df['Price'].min()),
     max_value=float(df['Price'].max()),
     value=(float(df['Price'].min()), float(df['Price'].max())),
-    format="%.0f"
+    format="¥{:,.0f}"
 )
 
 # Aplicar filtros
