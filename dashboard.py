@@ -69,28 +69,28 @@ st.sidebar.title("Filtros")
 # Filtros
 comarca = st.sidebar.selectbox(
     "Comarca",
-    options=["Todas"] + sorted(df['comarca'].unique().tolist())
+    options=["Todas"] + sorted(df['Comarca'].unique().tolist())
 )
 
 ocupacion = st.sidebar.multiselect(
     "Estado de Ocupación",
-    options=sorted(df['occupancy'].unique().tolist()),
-    default=sorted(df['occupancy'].unique().tolist())
+    options=sorted(df['Occupancy'].unique().tolist()),
+    default=sorted(df['Occupancy'].unique().tolist())
 )
 
 price_range = st.sidebar.slider(
     "Rango de Precio (¥)",
-    min_value=float(df['price'].min()),
-    max_value=float(df['price'].max()),
-    value=(float(df['price'].min()), float(df['price'].max())),
+    min_value=float(df['Price'].min()),
+    max_value=float(df['Price'].max()),
+    value=(float(df['Price'].min()), float(df['Price'].max())),
     format="%.0f"
 )
 
 # Aplicar filtros
-mask = df['price'].between(price_range[0], price_range[1])
-mask &= df['occupancy'].isin(ocupacion)
+mask = df['Price'].between(price_range[0], price_range[1])
+mask &= df['Occupancy'].isin(ocupacion)
 if comarca != "Todas":
-    mask &= (df['comarca'] == comarca)
+    mask &= (df['Comarca'] == comarca)
 
 filtered_df = df[mask]
 
@@ -103,15 +103,15 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
         "Precio Promedio",
-        f"¥{filtered_df['price'].mean():,.0f}",
-        f"{filtered_df['price'].mean() / df['price'].mean() - 1:+.1%}"
+        f"¥{filtered_df['Price'].mean():,.0f}",
+        f"{filtered_df['Price'].mean() / df['Price'].mean() - 1:+.1%}"
     )
 
 with col2:
     st.metric(
         "Rentabilidad Media",
-        f"{filtered_df['rentability_index'].mean():.2%}",
-        f"{filtered_df['rentability_index'].mean() / df['rentability_index'].mean() - 1:+.1%}"
+        f"{filtered_df['Rentability Index'].mean():.2%}",
+        f"{filtered_df['Rentability Index'].mean() / df['Rentability Index'].mean() - 1:+.1%}"
     )
 
 with col3:
@@ -124,8 +124,8 @@ with col3:
 with col4:
     st.metric(
         "Periodo de Recuperación",
-        f"{filtered_df['payback_period'].mean():.1f} años",
-        f"{filtered_df['payback_period'].mean() / df['payback_period'].mean() - 1:+.1%}"
+        f"{filtered_df['Payback Period'].mean():.1f} años",
+        f"{filtered_df['Payback Period'].mean() / df['Payback Period'].mean() - 1:+.1%}"
     )
 
 # Gráficos
@@ -140,10 +140,10 @@ with tab1:
         # Distribución de precios
         fig_price = px.histogram(
             filtered_df,
-            x="price",
+            x="Price",
             nbins=50,
             title="Distribución de Precios",
-            labels={"price": "Precio (¥)", "count": "Cantidad"}
+            labels={"Price": "Precio (¥)", "count": "Cantidad"}
         )
         fig_price.update_layout(showlegend=False)
         st.plotly_chart(fig_price, use_container_width=True)
@@ -152,10 +152,10 @@ with tab1:
         # Distribución de rentabilidad
         fig_rent = px.histogram(
             filtered_df,
-            x="rentability_index",
+            x="Rentability Index",
             nbins=50,
             title="Distribución de Rentabilidad",
-            labels={"rentability_index": "Índice de Rentabilidad", "count": "Cantidad"}
+            labels={"Rentability Index": "Índice de Rentabilidad", "count": "Cantidad"}
         )
         fig_rent.update_layout(showlegend=False)
         st.plotly_chart(fig_rent, use_container_width=True)
@@ -167,14 +167,14 @@ with tab2:
         # Rentabilidad vs Precio
         fig_scatter = px.scatter(
             filtered_df,
-            x="price",
-            y="rentability_index",
-            color="occupancy",
+            x="Price",
+            y="Rentability Index",
+            color="Occupancy",
             title="Rentabilidad vs Precio",
             labels={
-                "price": "Precio (¥)", 
-                "rentability_index": "Índice de Rentabilidad",
-                "occupancy": "Ocupación"
+                "Price": "Precio (¥)", 
+                "Rentability Index": "Índice de Rentabilidad",
+                "Occupancy": "Ocupación"
             }
         )
         st.plotly_chart(fig_scatter, use_container_width=True)
@@ -183,14 +183,14 @@ with tab2:
         # Precio por m²
         fig_size = px.scatter(
             filtered_df,
-            x="size",
-            y="price",
+            x="Size",
+            y="Price",
             color="occupancy",
             title="Precio vs Tamaño",
             labels={
-                "size": "Tamaño (m²)", 
-                "price": "Precio (¥)",
-                "occupancy": "Ocupación"
+                "Size": "Tamaño (m²)", 
+                "Price": "Precio (¥)",
+                "Occupancy": "Ocupación"
             }
         )
         st.plotly_chart(fig_size, use_container_width=True)
@@ -203,13 +203,13 @@ with tab3:
         filtered_df,
         lat='lat',
         lon='lon',
-        color='rentability_index',
-        size='price',
-        hover_name='address',
+        color='Rentability Index',
+        size='Price',
+        hover_name='Address',
         hover_data={
-            'price': ':,.0f',
-            'rentability_index': ':.2%',
-            'payback_period': ':.1f',
+            'Price': ':,.0f',
+            'Rentability Index': ':.2%',
+            'Payback Period': ':.1f',
             'lat': False,
             'lon': False
         },
@@ -238,16 +238,16 @@ st.header("Propiedades Detalladas")
 cols_to_show = st.multiselect(
     "Selecciona las columnas a mostrar",
     options=filtered_df.columns.tolist(),
-    default=['address', 'price', 'size', 'rentability_index', 'payback_period', 'avg_annual_rev']
+    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Avg Annual Rev']
 )
 
 # Mostrar tabla con formato
 st.dataframe(
     filtered_df[cols_to_show].style.format({
-        'price': '{:,.0f}',
-        'rentability_index': '{:.2%}',
-        'payback_period': '{:.1f}',
-        'avg_annual_rev': '{:,.0f}'
+        'Price': '{:,.0f}',
+        'Rentability Index': '{:.2%}',
+        'Payback Period': '{:.1f}',
+        'Avg Annual Rev': '{:,.0f}'
     }),
     hide_index=True,
     use_container_width=True
