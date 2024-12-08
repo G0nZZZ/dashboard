@@ -185,7 +185,7 @@ with tab2:
             filtered_df,
             x="Size",
             y="Price",
-            color="occupancy",
+            color="Occupancy",
             title="Precio vs Tamaño",
             labels={
                 "Size": "Tamaño (m²)", 
