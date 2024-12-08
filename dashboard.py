@@ -62,7 +62,7 @@ def load_data():
 
 # Cargar datos
 df = load_data()
-
+print(df.columns)
 # Sidebar con filtros
 st.sidebar.title("Filtros")
 
@@ -71,7 +71,7 @@ comarca = st.sidebar.selectbox(
     "Comarca",
     options=["Todas"] + sorted(df['Comarca'].unique().tolist())
 )
-
+df['Occupancy'] = df['Occupancy'].fillna('Unknown')
 ocupacion = st.sidebar.multiselect(
     "Estado de Ocupación",
     options=sorted(df['Occupancy'].unique().tolist()),
