@@ -74,8 +74,8 @@ comarca = st.sidebar.selectbox(
 
 ocupacion = st.sidebar.multiselect(
     "Estado de Ocupación",
-    options=sorted(df['Occupancy'].unique().tolist()),
-    default=sorted(df['Occupancy'].unique().tolist())
+    options=sorted(df['occupancy'].unique().tolist()),
+    default=sorted(df['occupancy'].unique().tolist())
 )
 
 price_range = st.sidebar.slider(
