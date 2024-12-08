@@ -98,7 +98,7 @@ min_price = int(df['Price'].min() or 0)
 max_price = int(df['Price'].max() or 0)
 
 # Crear las opciones del slider con el formato correcto
-price_options = [f"¥{i:,.0f}" for i in range(min_price, max_price + 1, 10000)]  # Incrementos de 10,000 para evitar demasiadas opciones
+price_options = [f"¥{i:,.0f}" for i in range(min_price, max_price + 1, 10000)]  # Incrementos de 10,000
 
 # Formatear los valores predeterminados
 default_min_price = f"¥{min_price:,.0f}"
@@ -111,17 +111,14 @@ price_range = st.sidebar.select_slider(
     value=(default_min_price, default_max_price)  # Usar los valores formateados
 )
 
-# Parsear el rango seleccionado de vuelta a enteros (si es necesario)
+# Parsear el rango seleccionado de vuelta a enteros
 selected_min_price = int(price_range[0].replace("¥", "").replace(",", ""))
 selected_max_price = int(price_range[1].replace("¥", "").replace(",", ""))
-
-# Mostrar el rango seleccionado para depuración
-st.sidebar.write(f"Rango seleccionado: {selected_min_price} - {selected_max_price}")
 
 
 
 # Aplicar filtros
-mask = df['Price'].between(price_range[0], price_range[1])
+mask = df['Price'].between(selected_min_price, selected_max_price)
 mask &= df['Occupancy'].isin(ocupacion)
 if comarca != "Todas":
     mask &= (df['Comarca'] == comarca)
