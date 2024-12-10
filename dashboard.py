@@ -281,40 +281,29 @@ if 'column_order' not in st.session_state:
 
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
-
-# Mostrar el HTML generado por el DataFrame
-st.write("### Verificación de HTML Generado")
-df["Link_HTML"] = df["Link"].apply(
+# Crear una nueva columna HTML para enlaces clickeables
+df["Link"] = df["Link"].apply(
     lambda x: f'<a href="{x}" target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>'
 )
-st.write(df[["Link_HTML"]].to_html(escape=False), unsafe_allow_html=True)
 
 # Configurar AgGrid
 gb = GridOptionsBuilder.from_dataframe(df)
 
-# Renderizador JavaScript
-link_renderer = JsCode('''
-function(params) {
-    if (params.value) {
-        return `<a href="${params.value}" target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>`;
-    } else {
-        return '';
-    }
-}
-''')
+# Permitir renderizado de HTML en todas las celdas
+gb.configure_column(
+    "Link",
+    header_name="Link",
+    cellRenderer="htmlCellRenderer"  # Usar renderizador HTML nativo
+)
 
-# Configuración de la columna Link
-gb.configure_column("Link", cellRenderer=link_renderer)
-
-# Generar opciones de AgGrid
+# Opciones del Grid
 grid_options = gb.build()
 
-# Mostrar la tabla con AgGrid
-st.write("### Tabla con AgGrid")
+# Mostrar tabla con AgGrid
 AgGrid(
     df,
     gridOptions=grid_options,
-    allow_unsafe_jscode=True,
+    allow_unsafe_jscode=True,  # Permitir JavaScript no seguro
     enable_enterprise_modules=False,
     theme="streamlit",
     fit_columns_on_grid_load=True
