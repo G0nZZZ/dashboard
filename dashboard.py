@@ -281,6 +281,7 @@ if 'column_order' not in st.session_state:
 
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
+# Seleccionar columnas a mostrar
 cols_to_show = st.multiselect(
     "Selecciona las columnas a mostrar",
     options=filtered_df.columns.tolist(),
@@ -298,15 +299,25 @@ if not filtered_df.empty:
         df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
-    if 'Link' in df_display.columns:
-        df_display.column_config.UrlColumn('Link')
-    # Configurar el grid
+    
+    # Configurar AgGrid
     gb = GridOptionsBuilder.from_dataframe(df_display)
-    gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     
     # Configuración especial para la columna de links
-
-
+    if 'Link' in df_display.columns:
+        # Definir el renderizador de JavaScript
+        link_renderer = JsCode('''
+        function(params) {
+            if (params.value) {
+                return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: none;">Abrir enlace</a>`;
+            }
+            return '';
+        }
+        ''')
+        gb.configure_column('Link', cellRenderer=link_renderer)
+    
+    # Aplicar configuraciones al resto de las columnas
+    gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     
     grid_options = gb.build()
     
@@ -314,7 +325,7 @@ if not filtered_df.empty:
     AgGrid(
         df_display,
         gridOptions=grid_options,
-        allow_unsafe_jscode=True,  # Permitir ejecución de JavaScript personalizado
+        allow_unsafe_jscode=True,  # Habilitar JS no seguro para renderizadores personalizados
         enable_enterprise_modules=False,
         theme='streamlit',
         fit_columns_on_grid_load=True
