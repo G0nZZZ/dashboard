@@ -304,7 +304,7 @@ if not filtered_df.empty:
     # Convertir la columna 'Link' en enlaces HTML
     if 'Link' in df_display.columns:
         df_display['Link'] = df_display['Link'].apply(
-            lambda x: f'<a href="{x}" target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>' if pd.notnull(x) else ''
+            lambda x: f'<a href={x} target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>' if pd.notnull(x) else ''
         )
 
     # Configurar AgGrid
