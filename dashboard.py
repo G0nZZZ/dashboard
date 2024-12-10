@@ -278,7 +278,7 @@ with tab3:
 if 'column_order' not in st.session_state:
     st.session_state.column_order = ['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
 
-# DataFrame de ejemplo
+# Datos de ejemplo
 df_display = pd.DataFrame({
     "ID": [1, 2, 3],
     "Nombre": ["Propiedad A", "Propiedad B", "Propiedad C"],
@@ -289,34 +289,25 @@ df_display = pd.DataFrame({
     ]
 })
 
-# Configurar GridOptionsBuilder
+# Configuración de opciones de la tabla
 gb = GridOptionsBuilder.from_dataframe(df_display)
 
-# Código JS para renderizar enlaces
+# Agregar renderizador para columna de enlaces
 link_renderer = JsCode('''
 function(params) {
-    if (params.value) {
-        return `<a href="${params.value}" target="_blank" style="text-decoration: none; color: #1f77b4;">🔗 Ver</a>`;
-    } else {
-        return '';
-    }
+    return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: none;">Abrir enlace</a>`;
 }
 ''')
 
 # Configurar columna específica
-gb.configure_column(
-    'Link',
-    cellRenderer=link_renderer
-)
+gb.configure_column("Link", cellRenderer=link_renderer)
 
-# Mostrar AgGrid
+# Renderizar la tabla
 AgGrid(
     df_display,
     gridOptions=gb.build(),
-    allow_unsafe_jscode=True,  # Asegura permitir JS no seguro
-    enable_enterprise_modules=False,
-    theme='streamlit',
-    fit_columns_on_grid_load=True
+    allow_unsafe_jscode=True,  # Permitir JS no seguro
+    theme="streamlit"
 )
 # # Tabla de datos detallados
 # st.header("Propiedades Detalladas")
