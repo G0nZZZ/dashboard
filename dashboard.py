@@ -284,14 +284,41 @@ cols_to_show = st.multiselect(
 )
 
 if not filtered_df.empty:
-    # Preparar los datos básicos
+    # Preparar los datos
     df_display = filtered_df[cols_to_show].copy()
     
-    # Convertir todos los datos a strings simples
+    # Formatear las columnas numéricas
+    if 'Price' in df_display.columns:
+        df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
+    if 'Rentability Index' in df_display.columns:
+        df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
+    if 'Payback Period' in df_display.columns:
+        df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
+        
+    # Convertir el resto de columnas a string
     for col in df_display.columns:
-        df_display[col] = df_display[col].astype(str)
+        if col not in ['Price', 'Rentability Index', 'Payback Period']:
+            df_display[col] = df_display[col].astype(str).replace('nan', '')
     
-    # Mostrar la tabla con configuración mínima
-    AgGrid(df_display)
+    # Configuración básica de la tabla
+    gb = GridOptionsBuilder.from_dataframe(df_display)
+    gb.configure_default_column(resizable=True)
+    
+    # Configurar anchos de columna
+    for col in df_display.columns:
+        if col == 'Address':
+            gb.configure_column(col, minWidth=200)
+        else:
+            gb.configure_column(col, minWidth=120)
+    
+    grid_options = gb.build()
+    
+    # Mostrar la tabla
+    AgGrid(
+        df_display,
+        gridOptions=grid_options,
+        theme='streamlit',
+        fit_columns_on_grid_load=True
+    )
 else:
     st.warning("No hay datos para mostrar.")
