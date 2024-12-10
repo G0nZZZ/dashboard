@@ -292,21 +292,25 @@ df_display = pd.DataFrame({
 # Configuración de opciones de la tabla
 gb = GridOptionsBuilder.from_dataframe(df_display)
 
-# Agregar renderizador para columna de enlaces
+# JavaScript para renderizar enlaces
 link_renderer = JsCode('''
 function(params) {
-    return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: none;">Abrir enlace</a>`;
+    if (params.value) {
+        return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: none;">Abrir enlace</a>`;
+    } else {
+        return '';
+    }
 }
 ''')
 
-# Configurar columna específica
+# Configurar la columna "Link" para usar el renderizador
 gb.configure_column("Link", cellRenderer=link_renderer)
 
-# Renderizar la tabla
+# Generar la tabla
 AgGrid(
     df_display,
     gridOptions=gb.build(),
-    allow_unsafe_jscode=True,  # Permitir JS no seguro
+    allow_unsafe_jscode=True,  # Asegurarse de permitir código JS
     theme="streamlit"
 )
 # # Tabla de datos detallados
