@@ -303,26 +303,28 @@ if not filtered_df.empty:
     gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     
     # Configuración especial para la columna de links
-    if 'Link' in df_display.columns:
-        gb.configure_column(
-            'Link',
-            cellRenderer=JsCode("""
-                function(params) {
-                    if (params.value) {
-                        return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: underline;">🔗 Ver</a>`;
-                    } else {
-                        return "";
-                    }
-                }
-            """)
-        )
+if 'Link' in df_display.columns:
+    # Definir el renderer de JavaScript
+    link_renderer = JsCode('''
+    function(params) {
+        if (params.value) {
+            return `<a href="${params.value}" target="_blank" style="text-decoration: none; color: #1f77b4;">🔗 Ver</a>`;
+        }
+        return '';
+    }
+    ''')
+
+    gb.configure_column(
+        'Link',
+        cellRenderer=link_renderer
+    )
     
     grid_options = gb.build()
     
     # Mostrar AgGrid
     AgGrid(
         df_display,
-        gridOptions=grid_options,
+        gridOptions=gb.build(),
         allow_unsafe_jscode=True,
         enable_enterprise_modules=False,
         theme='streamlit',
