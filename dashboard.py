@@ -299,26 +299,43 @@ if not filtered_df.empty:
     for col in df_display.columns:
         if col not in ['Price', 'Rentability Index', 'Payback Period', 'Link']:
             df_display[col] = df_display[col].astype(str).replace('nan', '')
+
+    # Reemplazar la columna Link con un texto más corto
+    if 'Link' in df_display.columns:
+        df_display['Link'] = '🔗 Ver'
     
     # Configuración básica de la tabla
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_default_column(resizable=True)
     
-    # Configurar el renderizado de links
+    # Configuración específica para la columna Link
     if 'Link' in df_display.columns:
-        link_renderer = JsCode("""
-        function(params) {
-            if (params.value) {
-                return `<a href="${params.value}" target="_blank" style="color: #1168E3; text-decoration: none;">🔗 Ver</a>`;
+        cellRenderer = JsCode("""
+        class UrlCellRenderer {
+            init(params) {
+                this.eGui = document.createElement('div');
+                this.eGui.innerHTML = params.value;
+                this.eGui.style.cursor = 'pointer';
+                this.eGui.style.color = '#1168E3';
+                
+                const url = params.data.Link;
+                this.eGui.addEventListener('click', () => {
+                    window.open(params.data.Link, '_blank');
+                });
             }
-            return '';
+
+            getGui() {
+                return this.eGui;
+            }
         }
+        return UrlCellRenderer;
         """)
-        gb.configure_column(
-            'Link', 
-            cellRenderer=link_renderer,
-            width=100
-        )
+        
+        gb.configure_column('Link', 
+                          cellRenderer=cellRenderer,
+                          width=80,
+                          sortable=False,
+                          filter=False)
 
     # Configurar anchos de columna
     for col in df_display.columns:
