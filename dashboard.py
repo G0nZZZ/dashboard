@@ -295,8 +295,6 @@ for _, row in df.iterrows():
         unsafe_allow_html=True
     )
 
-# Convertir la columna 'Link' en enlaces clicables
-df['Link'] = df['Link'].apply(lambda x: f'<a href="{x}" target="_blank" style="text-decoration:none; color:#1f77b4;">Abrir enlace</a>')
 
 # Renderizar en Streamlit con escape_html=False
 st.dataframe(df.style.format(escape_html=False))
