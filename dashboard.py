@@ -277,8 +277,9 @@ with tab3:
 
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
+# Filtros reordenables que también controlan el orden de las columnas
 cols_to_show = st.multiselect(
-    "Selecciona las columnas a mostrar",
+    "Selecciona y ordena las columnas (arrastra para reordenar)",
     options=filtered_df.columns.tolist(),
     default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
 )
