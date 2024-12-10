@@ -305,8 +305,8 @@ with cols[1]:
                     st.rerun()
 
 if not filtered_df.empty:
-    # Preparar los datos
-    df_display = filtered_df[cols_to_show].copy()
+    # Preparar los datos usando el orden guardado en session_state
+    df_display = filtered_df[st.session_state.column_order].copy()
     
     # Formatear las columnas numéricas, manteniendo los valores originales para ordenación
     if 'Price' in df_display.columns:
