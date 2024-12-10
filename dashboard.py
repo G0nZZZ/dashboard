@@ -276,34 +276,37 @@ with tab3:
         st.warning("No hay propiedades que coincidan con los filtros seleccionados.")
 
 # Tabla de datos detallados
-# Tabla de datos detallados
 st.header("Propiedades Detalladas")
 cols_to_show = st.multiselect(
     "Selecciona las columnas a mostrar",
     options=filtered_df.columns.tolist(),
-    default=['Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
+    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
 )
 
 if not filtered_df.empty:
-    # Preparar los datos
+    # Preparar los datos y asegurarse de que son del tipo correcto
     df_display = filtered_df[cols_to_show].copy()
     
-    # Formatear las columnas numéricas
-    if 'Price' in df_display.columns:
-        df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{x:,.0f}")
-    if 'Rentability Index' in df_display.columns:
-        df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{x:.2%}")
-    if 'Payback Period' in df_display.columns:
-        df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{x:.1f}")
+    # Convertir todos los valores a string para evitar problemas de tipo
+    for col in df_display.columns:
+        if col == 'Price':
+            df_display[col] = df_display[col].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
+        elif col == 'Rentability Index':
+            df_display[col] = df_display[col].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
+        elif col == 'Payback Period':
+            df_display[col] = df_display[col].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
+        else:
+            df_display[col] = df_display[col].astype(str).replace('nan', '')
 
     # Configurar las opciones de la tabla
     gb = GridOptionsBuilder.from_dataframe(df_display)
     
-    # Configuración general de columnas
+    # Configuración básica de columnas
     gb.configure_default_column(
         resizable=True,
         sorteable=True,
-        filterable=True
+        filterable=True,
+        suppressMovable=False  # Permitir mover columnas
     )
     
     # Configuración especial para la columna de links
@@ -311,10 +314,10 @@ if not filtered_df.empty:
         cellRenderer = {
             "function": """
             function(params) {
-                if (params.value) {
-                    return '<a href="' + params.value + '" target="_blank">Ver propiedad</a>'
+                if (params.value && params.value !== 'nan' && params.value !== 'None') {
+                    return '<a href="' + params.value + '" target="_blank">Ver propiedad</a>';
                 }
-                return ''
+                return '';
             }
             """,
             "type": "script"
@@ -332,31 +335,16 @@ if not filtered_df.empty:
         elif col != 'Link':
             gb.configure_column(col, minWidth=120)
     
-    # Habilitar las características de la tabla
-    gb.configure_grid_options(
-        enableRangeSelection=True,
-        domLayout='autoHeight'
-    )
-    
     grid_options = gb.build()
     
-    # Mostrar la tabla
+    # Mostrar la tabla con configuración simplificada
     AgGrid(
         df_display,
         gridOptions=grid_options,
         allow_unsafe_jscode=True,
         theme='streamlit',
-        fit_columns_on_grid_load=True,
-        height=400,
-        custom_css={
-            ".ag-cell-value > a": {
-                "color": "#1F77B4",
-                "text-decoration": "none"
-            },
-            ".ag-cell-value > a:hover": {
-                "text-decoration": "underline"
-            }
-        }
+        update_mode='VALUE_CHANGED',
+        fit_columns_on_grid_load=True
     )
 else:
     st.warning("No hay datos para mostrar.")
