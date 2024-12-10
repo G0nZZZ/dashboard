@@ -324,7 +324,7 @@ if 'Link' in df_display.columns:
     # Mostrar AgGrid
     AgGrid(
         df_display,
-        gridOptions=gb.build(),
+        gridOptions=grid_options,
         allow_unsafe_jscode=True,
         enable_enterprise_modules=False,
         theme='streamlit',
