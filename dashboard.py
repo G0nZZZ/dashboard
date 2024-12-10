@@ -279,40 +279,19 @@ if 'column_order' not in st.session_state:
     st.session_state.column_order = ['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
 
 # Datos de ejemplo
-df_display = pd.DataFrame({
-    "ID": [1, 2, 3],
-    "Nombre": ["Propiedad A", "Propiedad B", "Propiedad C"],
-    "Link": [
-        "https://example.com/property/123",
-        "https://example.com/property/456",
-        "https://example.com/property/789"
-    ]
+df = pd.DataFrame({
+    'ID': [1, 2, 3],
+    'Nombre': ['Propiedad A', 'Propiedad B', 'Propiedad C'],
+    'Link': ['https://example.com/property/123', 
+             'https://example.com/property/456', 
+             'https://example.com/property/789']
 })
 
-# Configuración de opciones de la tabla
-gb = GridOptionsBuilder.from_dataframe(df_display)
+# Convertir la columna 'Link' en enlaces clicables
+df['Link'] = df['Link'].apply(lambda x: f'<a href="{x}" target="_blank" style="text-decoration:none; color:#1f77b4;">Abrir enlace</a>')
 
-# JavaScript para renderizar enlaces
-link_renderer = JsCode('''
-function(params) {
-    if (params.value) {
-        return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: none;">Abrir enlace</a>`;
-    } else {
-        return '';
-    }
-}
-''')
-
-# Configurar la columna "Link" para usar el renderizador
-gb.configure_column("Link", cellRenderer=link_renderer)
-
-# Generar la tabla
-AgGrid(
-    df_display,
-    gridOptions=gb.build(),
-    allow_unsafe_jscode=True,  # Asegurarse de permitir código JS
-    theme="streamlit"
-)
+# Renderizar en Streamlit con escape_html=False
+st.dataframe(df.style.format(escape_html=False))
 # # Tabla de datos detallados
 # st.header("Propiedades Detalladas")
 # cols_to_show = st.multiselect(
