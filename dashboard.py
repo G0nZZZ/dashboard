@@ -280,68 +280,38 @@ if 'column_order' not in st.session_state:
 
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
-
-# Crear interfaz para reordenar columnas
-st.write("Ordena las columnas:")
-cols = st.columns([1, 3, 1])
-with cols[1]:
-    for i, col in enumerate(st.session_state.column_order):
-        col1, col2, col3 = st.columns([5, 1, 1])
-        with col1:
-            st.write(col)
-        with col2:
-            if i > 0:  # No mostrar "subir" para el primer elemento
-                if st.button("↑", key=f"up_{i}"):
-                    # Intercambiar con el elemento anterior
-                    st.session_state.column_order[i], st.session_state.column_order[i-1] = \
-                        st.session_state.column_order[i-1], st.session_state.column_order[i]
-                    st.rerun()
-        with col3:
-            if i < len(st.session_state.column_order) - 1:  # No mostrar "bajar" para el último elemento
-                if st.button("↓", key=f"down_{i}"):
-                    # Intercambiar con el siguiente elemento
-                    st.session_state.column_order[i], st.session_state.column_order[i+1] = \
-                        st.session_state.column_order[i+1], st.session_state.column_order[i]
-                    st.rerun()
+cols_to_show = st.multiselect(
+    "Selecciona las columnas a mostrar",
+    options=filtered_df.columns.tolist(),
+    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
+)
 
 if not filtered_df.empty:
-    # Preparar los datos usando el orden guardado en session_state
-    df_display = filtered_df[st.session_state.column_order].copy()
+    # Preparar los datos
+    df_display = filtered_df[cols_to_show].copy()
     
-    # Formatear las columnas numéricas, manteniendo los valores originales para ordenación
+    # Formatear las columnas numéricas
     if 'Price' in df_display.columns:
-        df_display['Price_display'] = df_display['Price'].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
+        df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
     if 'Rentability Index' in df_display.columns:
-        df_display['Rentability_display'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
+        df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
     if 'Payback Period' in df_display.columns:
-        df_display['Payback_display'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
+        df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     
-    # Configurar las columnas
-    column_config = {
-        "Link": st.column_config.LinkColumn("Link"),
-        "Price": st.column_config.NumberColumn(
-            "Price",
-            format="¥%.0f",
-            help="Click para ordenar"
-        ),
-        "Rentability Index": st.column_config.NumberColumn(
-            "Rentability Index",
-            format="%.2f%%",
-            help="Click para ordenar"
-        ),
-        "Payback Period": st.column_config.NumberColumn(
-            "Payback Period",
-            format="%.1f",
-            help="Click para ordenar"
-        )
-    }
+    # Configurar el grid
+    gb = GridOptionsBuilder.from_dataframe(df_display)
+    gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     
-    # Mostrar dataframe con ordenación habilitada
-    st.dataframe(
+    grid_options = gb.build()
+    
+    # Mostrar AgGrid
+    AgGrid(
         df_display,
-        hide_index=True,
-        column_config=column_config,
-        column_order=st.session_state.column_order
+        gridOptions=grid_options,
+        allow_unsafe_jscode=True,
+        enable_enterprise_modules=False,
+        theme='streamlit',
+        fit_columns_on_grid_load=True
     )
 else:
     st.warning("No hay datos para mostrar.")
