@@ -309,9 +309,10 @@ if not filtered_df.empty:
         link_renderer = JsCode('''
         function(params) {
             if (params.value) {
-                return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: none;">Abrir enlace</a>`;
+                return `<a href="${params.value}" target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>`;
+            } else {
+                return '';
             }
-            return '';
         }
         ''')
         gb.configure_column('Link', cellRenderer=link_renderer)
