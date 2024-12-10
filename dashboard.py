@@ -302,6 +302,13 @@ if not filtered_df.empty:
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     
+    # Configuración especial para la columna de links
+    if 'Link' in df_display.columns:
+        gb.configure_column(
+            'Link',
+            cellRenderer='function(params) { return params.value ? "<a href=\'" + params.value + "\' target=\'_blank\'>🔗 Ver</a>" : ""; }'
+        )
+    
     grid_options = gb.build()
     
     # Mostrar AgGrid
