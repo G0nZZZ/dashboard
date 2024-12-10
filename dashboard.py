@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
-
+import numpy as np
 # Configuración de la página
 st.set_page_config(
     page_title="Real Estate Analytics",
