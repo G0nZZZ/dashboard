@@ -275,6 +275,10 @@ with tab3:
     else:
         st.warning("No hay propiedades que coincidan con los filtros seleccionados.")
 
+import streamlit as st
+import pandas as pd
+from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
+
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
 cols_to_show = st.multiselect(
@@ -299,10 +303,6 @@ if not filtered_df.empty:
     for col in df_display.columns:
         if col not in ['Price', 'Rentability Index', 'Payback Period', 'Link']:
             df_display[col] = df_display[col].astype(str).replace('nan', '')
-
-    # Reemplazar la columna Link con un texto más corto
-    if 'Link' in df_display.columns:
-        df_display['Link'] = '🔗 Ver'
     
     # Configuración básica de la tabla
     gb = GridOptionsBuilder.from_dataframe(df_display)
@@ -311,24 +311,11 @@ if not filtered_df.empty:
     # Configuración específica para la columna Link
     if 'Link' in df_display.columns:
         cellRenderer = JsCode("""
-        class UrlCellRenderer {
-            init(params) {
-                this.eGui = document.createElement('div');
-                this.eGui.innerHTML = params.value;
-                this.eGui.style.cursor = 'pointer';
-                this.eGui.style.color = '#1168E3';
-                
-                const url = params.data.Link;
-                this.eGui.addEventListener('click', () => {
-                    window.open(params.data.Link, '_blank');
-                });
-            }
-
-            getGui() {
-                return this.eGui;
-            }
+        function(params) {
+            if (!params.value) return '';
+            const linkValue = params.value;
+            return '<span style="cursor: pointer; color: #1168E3;" onclick="window.open(`' + linkValue + '`, \'_blank\')">🔗 Ver</span>';
         }
-        return UrlCellRenderer;
         """)
         
         gb.configure_column('Link', 
