@@ -287,13 +287,16 @@ if not filtered_df.empty:
     # Preparar los datos
     df_display = filtered_df[cols_to_show].copy()
     
-    # Formatear las columnas numéricas
+    # Formatear las columnas numéricas y crear links HTML
     if 'Price' in df_display.columns:
         df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{x:,.0f}")
     if 'Rentability Index' in df_display.columns:
         df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{x:.2%}")
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{x:.1f}")
+    if 'Link' in df_display.columns:
+        df_display['Link'] = df_display['Link'].apply(lambda x: f'<a href="{x}" target="_blank">Ver propiedad</a>' if pd.notna(x) else '')
+
 
     # Configurar las opciones de la tabla
     gb = GridOptionsBuilder.from_dataframe(df_display)
@@ -303,19 +306,6 @@ if not filtered_df.empty:
         filterable=True
     )
     
-    # Configuración especial para la columna de links
-    if 'Link' in df_display.columns:
-        cellRenderer = JsCode("""
-        function(params) {
-            return '<a href="' + params.value + '" target="_blank">Ver propiedad</a>'
-        }
-        """)
-        gb.configure_column(
-            "Link",
-            cellRenderer=cellRenderer,
-            minWidth=130
-        )
-
     # Configurar el tamaño de las columnas
     for col in df_display.columns:
         if col == 'Address':
