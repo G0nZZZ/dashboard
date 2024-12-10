@@ -294,10 +294,10 @@ if not filtered_df.empty:
         df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
-        
+    
     # Convertir el resto de columnas a string
     for col in df_display.columns:
-        if col not in ['Price', 'Rentability Index', 'Payback Period']:
+        if col not in ['Price', 'Rentability Index', 'Payback Period', 'Link']:
             df_display[col] = df_display[col].astype(str).replace('nan', '')
     
     # Configuración básica de la tabla
@@ -308,19 +308,23 @@ if not filtered_df.empty:
     if 'Link' in df_display.columns:
         link_renderer = JsCode("""
         function(params) {
-            if (params.value && params.value !== 'nan' && params.value !== 'None') {
-                return '<a href="' + params.value + '" target="_blank">Ver propiedad</a>';
+            if (params.value) {
+                return `<a href="${params.value}" target="_blank" style="color: #1168E3; text-decoration: none;">🔗 Ver</a>`;
             }
             return '';
         }
         """)
-        gb.configure_column('Link', cellRenderer=link_renderer)
+        gb.configure_column(
+            'Link', 
+            cellRenderer=link_renderer,
+            width=100
+        )
 
     # Configurar anchos de columna
     for col in df_display.columns:
         if col == 'Address':
             gb.configure_column(col, minWidth=200)
-        else:
+        elif col != 'Link':
             gb.configure_column(col, minWidth=120)
     
     grid_options = gb.build()
@@ -331,7 +335,8 @@ if not filtered_df.empty:
         gridOptions=grid_options,
         theme='streamlit',
         fit_columns_on_grid_load=True,
-        allow_unsafe_jscode=True  # Necesario para los links
+        allow_unsafe_jscode=True,
+        enable_enterprise_modules=False
     )
 else:
     st.warning("No hay datos para mostrar.")
