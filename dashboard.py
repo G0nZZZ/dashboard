@@ -306,7 +306,15 @@ if not filtered_df.empty:
     if 'Link' in df_display.columns:
         gb.configure_column(
             'Link',
-            cellRenderer='function(params) { return params.value ? "<a href=\'" + params.value + "\' target=\'_blank\'>🔗 Ver</a>" : ""; }'
+            cellRenderer=JsCode("""
+                function(params) {
+                    if (params.value) {
+                        return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: underline;">🔗 Ver</a>`;
+                    } else {
+                        return "";
+                    }
+                }
+            """)
         )
     
     grid_options = gb.build()
