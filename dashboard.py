@@ -70,7 +70,7 @@ if df.empty:
     st.stop()
 
 # Manejo de valores nulos
-df['Occupancy'] = df['Occupancy'].fillna('Unknown')
+df['Occupancy'] = df['Occupancy'].fillna('Unknown').fillna('Sin especificar')
 df['Price'] = df['Price'].fillna(0)
 df['Rentability Index'] = df['Rentability Index'].fillna(0)
 df['Payback Period'] = df['Payback Period'].fillna(0)
