@@ -284,67 +284,14 @@ cols_to_show = st.multiselect(
 )
 
 if not filtered_df.empty:
-    # Preparar los datos y asegurarse de que son del tipo correcto
+    # Preparar los datos básicos
     df_display = filtered_df[cols_to_show].copy()
     
-    # Convertir todos los valores a string para evitar problemas de tipo
+    # Convertir todos los datos a strings simples
     for col in df_display.columns:
-        if col == 'Price':
-            df_display[col] = df_display[col].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
-        elif col == 'Rentability Index':
-            df_display[col] = df_display[col].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
-        elif col == 'Payback Period':
-            df_display[col] = df_display[col].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
-        else:
-            df_display[col] = df_display[col].astype(str).replace('nan', '')
-
-    # Configurar las opciones de la tabla
-    gb = GridOptionsBuilder.from_dataframe(df_display)
+        df_display[col] = df_display[col].astype(str)
     
-    # Configuración básica de columnas
-    gb.configure_default_column(
-        resizable=True,
-        sorteable=True,
-        filterable=True,
-        suppressMovable=False  # Permitir mover columnas
-    )
-    
-    # Configuración especial para la columna de links
-    if 'Link' in df_display.columns:
-        cellRenderer = {
-            "function": """
-            function(params) {
-                if (params.value && params.value !== 'nan' && params.value !== 'None') {
-                    return '<a href="' + params.value + '" target="_blank">Ver propiedad</a>';
-                }
-                return '';
-            }
-            """,
-            "type": "script"
-        }
-        gb.configure_column(
-            "Link",
-            cellRenderer=cellRenderer,
-            minWidth=130
-        )
-    
-    # Configurar el tamaño de las columnas
-    for col in df_display.columns:
-        if col == 'Address':
-            gb.configure_column(col, minWidth=200)
-        elif col != 'Link':
-            gb.configure_column(col, minWidth=120)
-    
-    grid_options = gb.build()
-    
-    # Mostrar la tabla con configuración simplificada
-    AgGrid(
-        df_display,
-        gridOptions=grid_options,
-        allow_unsafe_jscode=True,
-        theme='streamlit',
-        update_mode='VALUE_CHANGED',
-        fit_columns_on_grid_load=True
-    )
+    # Mostrar la tabla con configuración mínima
+    AgGrid(df_display)
 else:
     st.warning("No hay datos para mostrar.")
