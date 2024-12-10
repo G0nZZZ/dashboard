@@ -304,6 +304,18 @@ if not filtered_df.empty:
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_default_column(resizable=True)
     
+    # Configurar el renderizado de links
+    if 'Link' in df_display.columns:
+        link_renderer = JsCode("""
+        function(params) {
+            if (params.value && params.value !== 'nan' && params.value !== 'None') {
+                return '<a href="' + params.value + '" target="_blank">Ver propiedad</a>';
+            }
+            return '';
+        }
+        """)
+        gb.configure_column('Link', cellRenderer=link_renderer)
+
     # Configurar anchos de columna
     for col in df_display.columns:
         if col == 'Address':
@@ -318,7 +330,8 @@ if not filtered_df.empty:
         df_display,
         gridOptions=grid_options,
         theme='streamlit',
-        fit_columns_on_grid_load=True
+        fit_columns_on_grid_load=True,
+        allow_unsafe_jscode=True  # Necesario para los links
     )
 else:
     st.warning("No hay datos para mostrar.")
