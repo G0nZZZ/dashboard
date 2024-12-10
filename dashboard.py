@@ -82,11 +82,22 @@ comarca = st.sidebar.selectbox(
     options=["Todas"] + sorted(df['Comarca'].dropna().unique().tolist())
 )
 
-barrios = st.sidebar.multiselect(
-    "Barrios",
-    options=sorted(df['Barrio'].dropna().unique().tolist()),
-    default=sorted(df['Barrio'].dropna().unique().tolist())
-)
+# Sección de barrios con checkboxes
+st.sidebar.markdown("### Barrios")
+# Checkbox para seleccionar/deseleccionar todos
+select_all_barrios = st.sidebar.checkbox("Seleccionar todos los barrios", value=True)
+
+# Lista de barrios disponibles
+barrios_disponibles = sorted(df['Barrio'].dropna().unique().tolist())
+
+# Si "Seleccionar todos" está marcado, seleccionar todos por defecto
+default_state = select_all_barrios
+
+# Crear un checkbox para cada barrio
+barrios_seleccionados = []
+for barrio in barrios_disponibles:
+    if st.sidebar.checkbox(barrio, value=default_state, key=f"barrio_{barrio}"):
+        barrios_seleccionados.append(barrio)
 
 ocupacion = st.sidebar.multiselect(
     "Estado de Ocupación",
@@ -141,8 +152,8 @@ mask = df['Price'].between(selected_min_price, selected_max_price)
 mask &= df['Occupancy'].isin(ocupacion)
 if comarca != "Todas":
     mask &= (df['Comarca'] == comarca)
-if barrios:  # Si hay barrios seleccionados
-    mask &= df['Barrio'].isin(barrios)
+if barrios_seleccionados:  # Si hay barrios seleccionados
+    mask &= df['Barrio'].isin(barrios_seleccionados)
 
 filtered_df = df[mask]
 
