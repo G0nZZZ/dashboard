@@ -296,8 +296,6 @@ for _, row in df.iterrows():
     )
 
 
-# Renderizar en Streamlit con escape_html=False
-st.dataframe(df.style.format(escape_html=False))
 # # Tabla de datos detallados
 # st.header("Propiedades Detalladas")
 # cols_to_show = st.multiselect(
