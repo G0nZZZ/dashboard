@@ -285,7 +285,7 @@ st.header("Propiedades Detalladas")
 cols_to_show = st.multiselect(
     "Selecciona las columnas a mostrar",
     options=filtered_df.columns.tolist(),
-    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
+    default=['Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
 )
 
 if not filtered_df.empty:
@@ -304,12 +304,11 @@ if not filtered_df.empty:
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     # Configuración especial para la columna de links
-    if 'Link' in df_display.columns:
-        # Definir el renderizador de JavaScript
-        cell_renderer =  JsCode("""
-        function(params) {return `<a href=${params.value}</a>`}
-        """)
-        gb.configure_column('Link', cellRenderer=cell_renderer,suppressMovable=False)
+    cell_renderer =  JsCode("""
+    function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
+    """)
+
+    gb.configure_column("Link", cellRenderer=cell_renderer)
     
     # Aplicar configuraciones al resto de las columnas
 
