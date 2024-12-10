@@ -287,6 +287,14 @@ df = pd.DataFrame({
              'https://example.com/property/789']
 })
 
+# Mostrar cada fila como texto con enlaces clicables
+st.write("### Lista de Propiedades")
+for _, row in df.iterrows():
+    st.markdown(
+        f"**{row['ID']}: {row['Nombre']}** - [Abrir enlace]({row['Link']})",
+        unsafe_allow_html=True
+    )
+
 # Convertir la columna 'Link' en enlaces clicables
 df['Link'] = df['Link'].apply(lambda x: f'<a href="{x}" target="_blank" style="text-decoration:none; color:#1f77b4;">Abrir enlace</a>')
 
