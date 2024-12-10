@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 import numpy as np
+from st_aggrid import AgGrid, GridOptionsBuilder
+from st_aggrid.grid_options_builder import GridOptionsBuilder
 # Configuración de la página
 st.set_page_config(
     page_title="Real Estate Analytics",
@@ -273,20 +275,58 @@ with tab3:
         st.warning("No hay propiedades que coincidan con los filtros seleccionados.")
 
 # Tabla de datos detallados
+# Tabla de datos detallados
 st.header("Propiedades Detalladas")
 cols_to_show = st.multiselect(
     "Selecciona las columnas a mostrar",
     options=filtered_df.columns.tolist(),
-    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period']
+    default=['Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
 )
 
 if not filtered_df.empty:
-    st.dataframe(
-        filtered_df[cols_to_show].style.format({
-            'Price': '{:,.0f}', 'Rentability Index': '{:.2%}', 'Payback Period': '{:.1f}'
-        }),
-        hide_index=True,
-        use_container_width=True
+    # Preparar los datos
+    df_display = filtered_df[cols_to_show].copy()
+    
+    # Formatear las columnas numéricas
+    if 'Price' in df_display.columns:
+        df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{x:,.0f}")
+    if 'Rentability Index' in df_display.columns:
+        df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{x:.2%}")
+    if 'Payback Period' in df_display.columns:
+        df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{x:.1f}")
+
+    # Configurar las opciones de la tabla
+    gb = GridOptionsBuilder.from_dataframe(df_display)
+    gb.configure_default_column(
+        resizable=True,
+        sorteable=True,
+        filterable=True
+    )
+    
+    # Configurar el tamaño de las columnas
+    for col in df_display.columns:
+        if col == 'Address':
+            gb.configure_column(col, minWidth=200)
+        else:
+            gb.configure_column(col, minWidth=120)
+    
+    # Habilitar las características de la tabla
+    gb.configure_grid_options(
+        enableRangeSelection=True,
+        allowDragFromColumnsToolPanel=True,
+        suppressRowClickSelection=True
+    )
+    
+    grid_options = gb.build()
+    
+    # Mostrar la tabla
+    AgGrid(
+        df_display,
+        gridOptions=grid_options,
+        allow_unsafe_jscode=True,
+        theme='streamlit',
+        height=400,
+        enable_enterprise_modules=False
     )
 else:
     st.warning("No hay datos para mostrar.")
