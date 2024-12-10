@@ -82,9 +82,10 @@ comarca = st.sidebar.selectbox(
     options=["Todas"] + sorted(df['Comarca'].dropna().unique().tolist())
 )
 
-barrio = st.sidebar.selectbox(
-    "Barrio",
-    options=["Todas"] + sorted(df['Barrio'].dropna().unique().tolist())
+barrios = st.sidebar.multiselect(
+    "Barrios",
+    options=sorted(df['Barrio'].dropna().unique().tolist()),
+    default=sorted(df['Barrio'].dropna().unique().tolist())
 )
 
 ocupacion = st.sidebar.multiselect(
@@ -140,8 +141,8 @@ mask = df['Price'].between(selected_min_price, selected_max_price)
 mask &= df['Occupancy'].isin(ocupacion)
 if comarca != "Todas":
     mask &= (df['Comarca'] == comarca)
-if barrio != "Todas":
-    mask &= (df['Barrio'] == barrio)
+if barrios:  # Si hay barrios seleccionados
+    mask &= df['Barrio'].isin(barrios)
 
 filtered_df = df[mask]
 
