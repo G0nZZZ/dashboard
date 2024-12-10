@@ -292,7 +292,7 @@ df_display = pd.DataFrame({
 # Configurar GridOptionsBuilder
 gb = GridOptionsBuilder.from_dataframe(df_display)
 
-# Configuración especial para la columna de links
+# Código JS para renderizar enlaces
 link_renderer = JsCode('''
 function(params) {
     if (params.value) {
@@ -313,7 +313,7 @@ gb.configure_column(
 AgGrid(
     df_display,
     gridOptions=gb.build(),
-    allow_unsafe_jscode=True,  # Permite usar JS en las celdas
+    allow_unsafe_jscode=True,  # Asegura permitir JS no seguro
     enable_enterprise_modules=False,
     theme='streamlit',
     fit_columns_on_grid_load=True
