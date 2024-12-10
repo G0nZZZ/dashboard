@@ -304,12 +304,12 @@ if not filtered_df.empty:
     function(params) {return `<a href=${params.value} target="_blank">Link</a>`}
     """)
 
-    gb.configure_column("Link", cellRenderer=cell_renderer)
+
     # Configurar AgGrid
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     # Configuración especial para la columna de links
-
+    gb.configure_column("Link", cellRenderer=cell_renderer)
     
     # Aplicar configuraciones al resto de las columnas
 
