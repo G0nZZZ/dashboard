@@ -302,7 +302,7 @@ if not filtered_df.empty:
     
     # Configurar AgGrid
     gb = GridOptionsBuilder.from_dataframe(df_display)
-    
+    gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
     # Configuración especial para la columna de links
     if 'Link' in df_display.columns:
         # Definir el renderizador de JavaScript
@@ -315,10 +315,10 @@ if not filtered_df.empty:
             }
         }
         ''')
-        gb.configure_column('Link', cellRenderer=link_renderer)
+        gb.configure_column('Link', cellRenderer=link_renderer,suppressMovable=False)
     
     # Aplicar configuraciones al resto de las columnas
-    gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
+
     
     grid_options = gb.build()
     
