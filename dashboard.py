@@ -300,23 +300,15 @@ if not filtered_df.empty:
     gb.configure_default_column(resizable=True)
     
     # Configuración específica para la columna Link
+    # Convertir links a markdown
     if 'Link' in df_display.columns:
-        cellRenderer = JsCode("""
-        function(params) {
-            if (!params.value) return '';
-            return "<span style='cursor: pointer; color: #1168E3;' onclick='window.open(\"" + params.value + "\", \"_blank\")'>🔗 Ver</span>";
-        }
-        """)
-        
-        gb.configure_column('Link', 
-                          cellRenderer=cellRenderer,
-                          width=80)
+        df_display['Link'] = df_display['Link'].apply(lambda x: f"[🔗 Ver]({x})" if pd.notnull(x) else "")
 
     # Configurar anchos de columna
     for col in df_display.columns:
         if col == 'Address':
             gb.configure_column(col, minWidth=200)
-        elif col != 'Link':
+        else:
             gb.configure_column(col, minWidth=120)
     
     grid_options = gb.build()
