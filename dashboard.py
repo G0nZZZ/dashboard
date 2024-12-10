@@ -299,8 +299,8 @@ if not filtered_df.empty:
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     if 'Link' in df_display.columns:
-        # Convert the 'Profile' column to clickable links
-        df_display.style.format({'Link': lambda x: f'<a href="{x}">Link</a>'})
+        st.column_config.UrlColumn('Link')
+        st.dataframe(df_display)
     # Configurar el grid
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
