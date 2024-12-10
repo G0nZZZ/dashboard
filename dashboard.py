@@ -341,7 +341,7 @@ if not filtered_df.empty:
         df_display,
         hide_index=True,
         column_config=column_config,
-        column_order=cols_to_show
+        column_order=st.session_state.column_order
     )
 else:
     st.warning("No hay datos para mostrar.")
