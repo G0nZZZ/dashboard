@@ -307,7 +307,7 @@ if not filtered_df.empty:
     if 'Link' in df_display.columns:
         # Definir el renderizador de JavaScript
         cell_renderer =  JsCode("""
-        function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
+        function(params) {return `<a href=${params.value}</a>`}
         """)
         gb.configure_column('Link', cellRenderer=cell_renderer,suppressMovable=False)
     
