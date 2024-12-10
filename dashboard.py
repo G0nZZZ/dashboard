@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 import numpy as np
-from st_aggrid import AgGrid, GridOptionsBuilder
+from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 # Configuración de la página
 st.set_page_config(
@@ -303,18 +303,32 @@ if not filtered_df.empty:
         filterable=True
     )
     
+    # Configuración especial para la columna de links
+    if 'Link' in df_display.columns:
+        cellRenderer = JsCode("""
+        function(params) {
+            return '<a href="' + params.value + '" target="_blank">Ver propiedad</a>'
+        }
+        """)
+        gb.configure_column(
+            "Link",
+            cellRenderer=cellRenderer,
+            minWidth=130
+        )
+
     # Configurar el tamaño de las columnas
     for col in df_display.columns:
         if col == 'Address':
             gb.configure_column(col, minWidth=200)
-        else:
+        elif col != 'Link':  # No configuramos Link aquí porque ya lo hicimos arriba
             gb.configure_column(col, minWidth=120)
     
     # Habilitar las características de la tabla
     gb.configure_grid_options(
         enableRangeSelection=True,
         allowDragFromColumnsToolPanel=True,
-        suppressRowClickSelection=True
+        suppressRowClickSelection=True,
+        domLayout='autoHeight'  # Esto hace que la altura se ajuste al contenido
     )
     
     grid_options = gb.build()
@@ -325,8 +339,8 @@ if not filtered_df.empty:
         gridOptions=grid_options,
         allow_unsafe_jscode=True,
         theme='streamlit',
-        height=400,
-        enable_enterprise_modules=False
+        enable_enterprise_modules=False,
+        update_mode='MODEL_CHANGED'
     )
 else:
     st.warning("No hay datos para mostrar.")
