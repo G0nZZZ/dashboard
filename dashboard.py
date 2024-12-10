@@ -285,7 +285,7 @@ st.header("Propiedades Detalladas")
 cols_to_show = st.multiselect(
     "Selecciona las columnas a mostrar",
     options=filtered_df.columns.tolist(),
-    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
+    default=['Station Name', 'Walking Distance', 'Price', 'Size', 'Occupancy', 'Avg Daily Rate', 'Link']
 )
 
 if not filtered_df.empty:
