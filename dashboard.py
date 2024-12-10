@@ -297,40 +297,10 @@ if not filtered_df.empty:
     if 'Link' in df_display.columns:
         df_display['Link'] = df_display['Link'].apply(lambda x: f'<a href="{x}" target="_blank">Ver propiedad</a>' if pd.notna(x) else '')
 
-
-    # Configurar las opciones de la tabla
-    gb = GridOptionsBuilder.from_dataframe(df_display)
-    gb.configure_default_column(
-        resizable=True,
-        sorteable=True,
-        filterable=True
-    )
+    # Configurar el estilo de la tabla
+    styled_df = df_display.style.format(escape="html")
     
-    # Configurar el tamaño de las columnas
-    for col in df_display.columns:
-        if col == 'Address':
-            gb.configure_column(col, minWidth=200)
-        elif col != 'Link':  # No configuramos Link aquí porque ya lo hicimos arriba
-            gb.configure_column(col, minWidth=120)
-    
-    # Habilitar las características de la tabla
-    gb.configure_grid_options(
-        enableRangeSelection=True,
-        allowDragFromColumnsToolPanel=True,
-        suppressRowClickSelection=True,
-        domLayout='autoHeight'  # Esto hace que la altura se ajuste al contenido
-    )
-    
-    grid_options = gb.build()
-    
-    # Mostrar la tabla
-    AgGrid(
-        df_display,
-        gridOptions=grid_options,
-        allow_unsafe_jscode=True,
-        theme='streamlit',
-        enable_enterprise_modules=False,
-        update_mode='MODEL_CHANGED'
-    )
+    # Mostrar la tabla con HTML habilitado
+    st.write(styled_df.to_html(escape=False), unsafe_allow_html=True)
 else:
     st.warning("No hay datos para mostrar.")
