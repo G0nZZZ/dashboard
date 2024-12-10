@@ -97,8 +97,20 @@ ocupacion = st.sidebar.multiselect(
 min_price = int(df['Price'].min() or 0)
 max_price = int(df['Price'].max() or 0)
 
+# Crear rangos logarítmicos para los precios
+# Usamos numpy logspace para crear una secuencia logarítmica
+# Añadimos 1 al precio mínimo para evitar log(0)
+log_min = np.log10(min_price + 1)
+log_max = np.log10(max_price)
+num_steps = 100  # Número de pasos en el slider
+
+# Crear los valores logarítmicos y redondearlos a números enteros
+price_values = np.round(np.logspace(log_min, log_max, num_steps)).astype(int)
+# Eliminar duplicados que puedan surgir del redondeo
+price_values = np.unique(price_values)
+
 # Crear las opciones del slider con el formato correcto
-price_options = [f"¥{i:,.0f}" for i in range(min_price, max_price + 1, 10000)]  # Incrementos de 10,000
+price_options = [f"¥{i:,.0f}" for i in price_values]
 
 # Formatear los valores predeterminados
 default_min_price = f"¥{min_price:,.0f}"
@@ -108,7 +120,7 @@ default_max_price = f"¥{max_price:,.0f}"
 price_range = st.sidebar.select_slider(
     "Rango de Precio (¥)",
     options=price_options,
-    value=(default_min_price, default_max_price)  # Usar los valores formateados
+    value=(default_min_price, default_max_price)
 )
 
 # Parsear el rango seleccionado de vuelta a enteros
