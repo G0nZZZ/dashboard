@@ -281,6 +281,7 @@ if 'column_order' not in st.session_state:
 
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
+
 # Seleccionar columnas a mostrar
 cols_to_show = st.multiselect(
     "Selecciona las columnas a mostrar",
@@ -300,22 +301,25 @@ if not filtered_df.empty:
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     
-    cell_renderer =  JsCode("""
-    function(params) {return `<a href=${params.value} target="_blank">Link</a>`}
+    # Configuración del renderizador de celdas para los enlaces
+    cell_renderer = JsCode("""
+    function(params) {
+        if (params.value) {
+            return `<a href="${params.value}" target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>`;
+        } else {
+            return '';
+        }
+    }
     """)
-
 
     # Configurar AgGrid
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
-    # Configuración especial para la columna de links
-    gb.configure_column("Link", cellRenderer=cell_renderer)
-    
-    # Aplicar configuraciones al resto de las columnas
+    gb.configure_column("Link", cellRenderer=cell_renderer)  # Agregar el renderizador personalizado
 
-    
+    # Construir opciones de grid
     grid_options = gb.build()
-    
+
     # Mostrar AgGrid
     AgGrid(
         df_display,
