@@ -106,15 +106,21 @@ num_steps = 100  # Número de pasos en el slider
 
 # Crear los valores logarítmicos y redondearlos a números enteros
 price_values = np.round(np.logspace(log_min, log_max, num_steps)).astype(int)
-# Eliminar duplicados que puedan surgir del redondeo
-price_values = np.unique(price_values)
+# Asegurarse de que el precio mínimo y máximo estén incluidos
+price_values = np.unique(np.append(price_values, [min_price, max_price]))
+# Ordenar los valores
+price_values.sort()
 
 # Crear las opciones del slider con el formato correcto
 price_options = [f"¥{i:,.0f}" for i in price_values]
 
-# Formatear los valores predeterminados
-default_min_price = f"¥{min_price:,.0f}"
-default_max_price = f"¥{max_price:,.0f}"
+# Encontrar los índices más cercanos para los valores por defecto
+min_price_idx = np.searchsorted(price_values, min_price)
+max_price_idx = np.searchsorted(price_values, max_price)
+
+# Usar los valores formateados correspondientes a estos índices
+default_min_price = price_options[min_price_idx]
+default_max_price = price_options[max_price_idx - 1]  # -1 para asegurarnos de que está en el rango
 
 # Configurar el select_slider con opciones formateadas
 price_range = st.sidebar.select_slider(
