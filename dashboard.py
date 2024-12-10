@@ -82,22 +82,29 @@ comarca = st.sidebar.selectbox(
     options=["Todas"] + sorted(df['Comarca'].dropna().unique().tolist())
 )
 
-# Sección de barrios con checkboxes
-st.sidebar.markdown("### Barrios")
-# Checkbox para seleccionar/deseleccionar todos
-select_all_barrios = st.sidebar.checkbox("Seleccionar todos los barrios", value=True)
+# Crear un expander para los barrios
+with st.sidebar.expander("Seleccionar Barrios"):
+    # Checkbox para seleccionar/deseleccionar todos
+    select_all_barrios = st.checkbox("Seleccionar todos los barrios")
 
-# Lista de barrios disponibles
-barrios_disponibles = sorted(df['Barrio'].dropna().unique().tolist())
+    # Lista de barrios disponibles
+    barrios_disponibles = sorted(df['Barrio'].dropna().unique().tolist())
+    
+    # Crear un checkbox para cada barrio
+    barrios_seleccionados = []
+    for barrio in barrios_disponibles:
+        # Si es Shinjuku, marcarlo por defecto
+        default_value = True if barrio == "Shinjuku" else select_all_barrios
+        if st.checkbox(barrio, value=default_value, key=f"barrio_{barrio}"):
+            barrios_seleccionados.append(barrio)
 
-# Si "Seleccionar todos" está marcado, seleccionar todos por defecto
-default_state = select_all_barrios
-
-# Crear un checkbox para cada barrio
-barrios_seleccionados = []
-for barrio in barrios_disponibles:
-    if st.sidebar.checkbox(barrio, value=default_state, key=f"barrio_{barrio}"):
-        barrios_seleccionados.append(barrio)
+    # Asegurarse de que al menos un barrio está seleccionado
+    if not barrios_seleccionados:
+        st.warning("Por favor selecciona al menos un barrio")
+        if "Shinjuku" in barrios_disponibles:
+            barrios_seleccionados = ["Shinjuku"]
+        else:
+            barrios_seleccionados = [barrios_disponibles[0]]
 
 ocupacion = st.sidebar.multiselect(
     "Estado de Ocupación",
