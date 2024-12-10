@@ -308,7 +308,7 @@ if 'Link' in df_display.columns:
     link_renderer = JsCode('''
     function(params) {
         if (params.value) {
-            return `<a href="${params.value}"</a>`;
+            return `<a href=${params.value}</a>`;
         }
         return '';
     }
