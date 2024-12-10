@@ -275,14 +275,34 @@ with tab3:
     else:
         st.warning("No hay propiedades que coincidan con los filtros seleccionados.")
 
+if 'column_order' not in st.session_state:
+    st.session_state.column_order = ['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
+
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
-# Filtros reordenables que también controlan el orden de las columnas
-cols_to_show = st.multiselect(
-    "Selecciona y ordena las columnas (arrastra para reordenar)",
-    options=filtered_df.columns.tolist(),
-    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
-)
+
+# Crear interfaz para reordenar columnas
+st.write("Ordena las columnas:")
+cols = st.columns([1, 3, 1])
+with cols[1]:
+    for i, col in enumerate(st.session_state.column_order):
+        col1, col2, col3 = st.columns([5, 1, 1])
+        with col1:
+            st.write(col)
+        with col2:
+            if i > 0:  # No mostrar "subir" para el primer elemento
+                if st.button("↑", key=f"up_{i}"):
+                    # Intercambiar con el elemento anterior
+                    st.session_state.column_order[i], st.session_state.column_order[i-1] = \
+                        st.session_state.column_order[i-1], st.session_state.column_order[i]
+                    st.rerun()
+        with col3:
+            if i < len(st.session_state.column_order) - 1:  # No mostrar "bajar" para el último elemento
+                if st.button("↓", key=f"down_{i}"):
+                    # Intercambiar con el siguiente elemento
+                    st.session_state.column_order[i], st.session_state.column_order[i+1] = \
+                        st.session_state.column_order[i+1], st.session_state.column_order[i]
+                    st.rerun()
 
 if not filtered_df.empty:
     # Preparar los datos
