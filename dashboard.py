@@ -275,10 +275,6 @@ with tab3:
     else:
         st.warning("No hay propiedades que coincidan con los filtros seleccionados.")
 
-import streamlit as st
-import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
 cols_to_show = st.multiselect(
@@ -299,11 +295,6 @@ if not filtered_df.empty:
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     
-    # Convertir el resto de columnas a string
-    for col in df_display.columns:
-        if col not in ['Price', 'Rentability Index', 'Payback Period', 'Link']:
-            df_display[col] = df_display[col].astype(str).replace('nan', '')
-    
     # Configuración básica de la tabla
     gb = GridOptionsBuilder.from_dataframe(df_display)
     gb.configure_default_column(resizable=True)
@@ -313,16 +304,13 @@ if not filtered_df.empty:
         cellRenderer = JsCode("""
         function(params) {
             if (!params.value) return '';
-            const linkValue = params.value;
-            return '<span style="cursor: pointer; color: #1168E3;" onclick="window.open(`' + linkValue + '`, \'_blank\')">🔗 Ver</span>';
+            return "<span style='cursor: pointer; color: #1168E3;' onclick='window.open(\"" + params.value + "\", \"_blank\")'>🔗 Ver</span>";
         }
         """)
         
         gb.configure_column('Link', 
                           cellRenderer=cellRenderer,
-                          width=80,
-                          sortable=False,
-                          filter=False)
+                          width=80)
 
     # Configurar anchos de columna
     for col in df_display.columns:
