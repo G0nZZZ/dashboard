@@ -282,11 +282,17 @@ if 'column_order' not in st.session_state:
 # Tabla de datos detallados
 st.header("Propiedades Detalladas")
 
-# Seleccionar columnas a mostrar
+# Mostrar el HTML generado por el DataFrame
+st.write("### Verificación de HTML Generado")
+df["Link_HTML"] = df["Link"].apply(
+    lambda x: f'<a href="{x}" target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>'
+)
+st.write(df[["Link_HTML"]].to_html(escape=False), unsafe_allow_html=True)
+
 # Configurar AgGrid
 gb = GridOptionsBuilder.from_dataframe(df)
 
-# Renderizador JavaScript para la columna 'Link'
+# Renderizador JavaScript
 link_renderer = JsCode('''
 function(params) {
     if (params.value) {
@@ -297,19 +303,19 @@ function(params) {
 }
 ''')
 
-# Configuración de la columna 'Link' con el renderizador
+# Configuración de la columna Link
 gb.configure_column("Link", cellRenderer=link_renderer)
 
-# Configurar columnas
-gb.configure_default_column(resizable=True, suppressMovable=False)
+# Generar opciones de AgGrid
 grid_options = gb.build()
 
-# Renderizar la tabla con AgGrid
+# Mostrar la tabla con AgGrid
+st.write("### Tabla con AgGrid")
 AgGrid(
     df,
     gridOptions=grid_options,
-    allow_unsafe_jscode=True,  # Permitir JavaScript personalizado
-    theme="streamlit",
+    allow_unsafe_jscode=True,
     enable_enterprise_modules=False,
+    theme="streamlit",
     fit_columns_on_grid_load=True
 )
