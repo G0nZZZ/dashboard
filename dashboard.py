@@ -299,37 +299,14 @@ if not filtered_df.empty:
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     
-    # Configurar el grid
-    gb = GridOptionsBuilder.from_dataframe(df_display)
-    gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
-    
-    # Configuración especial para la columna de links
-    if 'Link' in df_display.columns:
-        # Definir el renderer de JavaScript
-        link_renderer = JsCode('''
-        function(params) {
-            if (params.value) {
-                return `<a href="${params.value}" target="_blank" style="color: #1f77b4; text-decoration: none;">Abrir enlace</a>`;
-            }
-            return '';
-        }
-        ''')
-
-        gb.configure_column(
-            'Link',
-            cellRenderer=link_renderer
+    # Mostrar las filas con Markdown, iterando para hacer los enlaces clicables
+    st.write("### Lista de Propiedades")
+    for _, row in df_display.iterrows():
+        # Crear una fila con enlaces clicables
+        row_content = " | ".join(
+            f"**{col}:** {row[col]}" if col != 'Link' else f"[Abrir enlace]({row[col]})"
+            for col in cols_to_show
         )
-    
-    grid_options = gb.build()
-    
-    # Mostrar AgGrid
-    AgGrid(
-        df_display,
-        gridOptions=grid_options,
-        allow_unsafe_jscode=True,  # Permitir ejecución de JavaScript personalizado
-        enable_enterprise_modules=False,
-        theme='streamlit',
-        fit_columns_on_grid_load=True
-    )
+        st.markdown(row_content, unsafe_allow_html=True)
 else:
     st.warning("No hay datos para mostrar.")
