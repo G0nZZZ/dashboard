@@ -287,21 +287,40 @@ if not filtered_df.empty:
     # Preparar los datos
     df_display = filtered_df[cols_to_show].copy()
     
-    # Formatear las columnas numéricas
+    # Formatear las columnas numéricas, manteniendo los valores originales para ordenación
     if 'Price' in df_display.columns:
-        df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
+        df_display['Price_display'] = df_display['Price'].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
     if 'Rentability Index' in df_display.columns:
-        df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
+        df_display['Rentability_display'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
     if 'Payback Period' in df_display.columns:
-        df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
+        df_display['Payback_display'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     
-    # Mostrar dataframe básico
+    # Configurar las columnas
+    column_config = {
+        "Link": st.column_config.LinkColumn("Link"),
+        "Price": st.column_config.NumberColumn(
+            "Price",
+            format="¥%.0f",
+            help="Click para ordenar"
+        ),
+        "Rentability Index": st.column_config.NumberColumn(
+            "Rentability Index",
+            format="%.2f%%",
+            help="Click para ordenar"
+        ),
+        "Payback Period": st.column_config.NumberColumn(
+            "Payback Period",
+            format="%.1f",
+            help="Click para ordenar"
+        )
+    }
+    
+    # Mostrar dataframe con ordenación habilitada
     st.dataframe(
         df_display,
         hide_index=True,
-        column_config={
-            "Link": st.column_config.LinkColumn("Link")
-        }
+        column_config=column_config,
+        column_order=cols_to_show
     )
 else:
     st.warning("No hay datos para mostrar.")
