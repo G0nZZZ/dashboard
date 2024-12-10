@@ -306,16 +306,10 @@ if not filtered_df.empty:
     # Configuración especial para la columna de links
     if 'Link' in df_display.columns:
         # Definir el renderizador de JavaScript
-        link_renderer = JsCode('''
-        function(params) {
-            if (params.value) {
-                return `<a href="${params.value}" target="_blank" style="text-decoration: none; color: #1f77b4;">Abrir enlace</a>`;
-            } else {
-                return '';
-            }
-        }
-        ''')
-        gb.configure_column('Link', cellRenderer=link_renderer,suppressMovable=False)
+        cell_renderer =  JsCode("""
+        function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
+        """)
+        gb.configure_column('Link', cellRenderer=cell_renderer,suppressMovable=False)
     
     # Aplicar configuraciones al resto de las columnas
 
