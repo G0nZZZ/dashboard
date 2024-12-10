@@ -278,57 +278,97 @@ with tab3:
 if 'column_order' not in st.session_state:
     st.session_state.column_order = ['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
 
-# Tabla de datos detallados
-st.header("Propiedades Detalladas")
-cols_to_show = st.multiselect(
-    "Selecciona las columnas a mostrar",
-    options=filtered_df.columns.tolist(),
-    default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
-)
+# DataFrame de ejemplo
+df_display = pd.DataFrame({
+    "ID": [1, 2, 3],
+    "Nombre": ["Propiedad A", "Propiedad B", "Propiedad C"],
+    "Link": [
+        "https://example.com/property/123",
+        "https://example.com/property/456",
+        "https://example.com/property/789"
+    ]
+})
 
-if not filtered_df.empty:
-    # Preparar los datos
-    df_display = filtered_df[cols_to_show].copy()
-    
-    # Formatear las columnas numéricas
-    if 'Price' in df_display.columns:
-        df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
-    if 'Rentability Index' in df_display.columns:
-        df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
-    if 'Payback Period' in df_display.columns:
-        df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
-    
-    # Configurar el grid
-    gb = GridOptionsBuilder.from_dataframe(df_display)
-    gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
-    
-    # Configuración especial para la columna de links
-if 'Link' in df_display.columns:
-    # Definir el renderer de JavaScript
-    link_renderer = JsCode('''
-    function(params) {
-        if (params.value) {
-            return `<a href=${params.value}</a>`;
-        }
+# Configurar GridOptionsBuilder
+gb = GridOptionsBuilder.from_dataframe(df_display)
+
+# Configuración especial para la columna de links
+link_renderer = JsCode('''
+function(params) {
+    if (params.value) {
+        return `<a href="${params.value}" target="_blank" style="text-decoration: none; color: #1f77b4;">🔗 Ver</a>`;
+    } else {
         return '';
     }
-    ''')
+}
+''')
 
-    gb.configure_column(
-        'Link',
-        cellRenderer=link_renderer
-    )
+# Configurar columna específica
+gb.configure_column(
+    'Link',
+    cellRenderer=link_renderer
+)
+
+# Mostrar AgGrid
+AgGrid(
+    df_display,
+    gridOptions=gb.build(),
+    allow_unsafe_jscode=True,  # Permite usar JS en las celdas
+    enable_enterprise_modules=False,
+    theme='streamlit',
+    fit_columns_on_grid_load=True
+)
+# # Tabla de datos detallados
+# st.header("Propiedades Detalladas")
+# cols_to_show = st.multiselect(
+#     "Selecciona las columnas a mostrar",
+#     options=filtered_df.columns.tolist(),
+#     default=['Address', 'Price', 'Size', 'Rentability Index', 'Payback Period', 'Link']
+# )
+
+# if not filtered_df.empty:
+#     # Preparar los datos
+#     df_display = filtered_df[cols_to_show].copy()
     
-    grid_options = gb.build()
+#     # Formatear las columnas numéricas
+#     if 'Price' in df_display.columns:
+#         df_display['Price'] = df_display['Price'].apply(lambda x: f"¥{float(x):,.0f}" if pd.notnull(x) else "")
+#     if 'Rentability Index' in df_display.columns:
+#         df_display['Rentability Index'] = df_display['Rentability Index'].apply(lambda x: f"{float(x):.2%}" if pd.notnull(x) else "")
+#     if 'Payback Period' in df_display.columns:
+#         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     
-    # Mostrar AgGrid
-    AgGrid(
-        df_display,
-        gridOptions=grid_options,
-        allow_unsafe_jscode=True,
-        enable_enterprise_modules=False,
-        theme='streamlit',
-        fit_columns_on_grid_load=True
-    )
-else:
-    st.warning("No hay datos para mostrar.")
+#     # Configurar el grid
+#     gb = GridOptionsBuilder.from_dataframe(df_display)
+#     gb.configure_columns(cols_to_show, suppressMovable=False)  # Permitir mover columnas
+    
+#     # Configuración especial para la columna de links
+# if 'Link' in df_display.columns:
+#     # Definir el renderer de JavaScript
+#     link_renderer = JsCode('''
+#     function(params) {
+#         if (params.value) {
+#             return `<a href=${params.value}</a>`;
+#         }
+#         return '';
+#     }
+#     ''')
+
+#     gb.configure_column(
+#         'Link',
+#         cellRenderer=link_renderer
+#     )
+    
+#     grid_options = gb.build()
+    
+#     # Mostrar AgGrid
+#     AgGrid(
+#         df_display,
+#         gridOptions=grid_options,
+#         allow_unsafe_jscode=True,
+#         enable_enterprise_modules=False,
+#         theme='streamlit',
+#         fit_columns_on_grid_load=True
+#     )
+# else:
+#     st.warning("No hay datos para mostrar.")
