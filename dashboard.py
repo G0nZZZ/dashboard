@@ -295,32 +295,13 @@ if not filtered_df.empty:
     if 'Payback Period' in df_display.columns:
         df_display['Payback Period'] = df_display['Payback Period'].apply(lambda x: f"{float(x):.1f}" if pd.notnull(x) else "")
     
-    # Configuración básica de la tabla
-    gb = GridOptionsBuilder.from_dataframe(df_display)
-    gb.configure_default_column(resizable=True)
-    
-    # Configuración específica para la columna Link
-    # Convertir links a markdown
-    if 'Link' in df_display.columns:
-        df_display['Link'] = df_display['Link'].apply(lambda x: f"[🔗 Ver]({x})" if pd.notnull(x) else "")
-
-    # Configurar anchos de columna
-    for col in df_display.columns:
-        if col == 'Address':
-            gb.configure_column(col, minWidth=200)
-        else:
-            gb.configure_column(col, minWidth=120)
-    
-    grid_options = gb.build()
-    
-    # Mostrar la tabla
-    AgGrid(
+    # Mostrar dataframe básico
+    st.dataframe(
         df_display,
-        gridOptions=grid_options,
-        theme='streamlit',
-        fit_columns_on_grid_load=True,
-        allow_unsafe_jscode=True,
-        enable_enterprise_modules=False
+        hide_index=True,
+        column_config={
+            "Link": st.column_config.LinkColumn("Link")
+        }
     )
 else:
     st.warning("No hay datos para mostrar.")
